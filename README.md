@@ -1,45 +1,98 @@
-# Ratada
+# Ratada - Micromouse Simulation
 
-![Screenshot of Ratada with RoboChallenge 2024 Day 3 maze](https://github.com/user-attachments/assets/3e1510fe-5551-4718-a904-39e6cc5a3e53)
+This repository contains two main workspaces for the Ratada micromouse simulation project.
 
-## Introduction
+---
 
-Ratada is a 3D simulation environment for Micromouse robots.
+## gz_ws - Gazebo Workspace
 
-## Supported Platform
+The `gz_ws` workspace contains Gazebo plugins for the Ratada simulation.
 
-Ratada is implemented as a set of plugins for Gazebo and ROS2.
+### Components
 
-It has been tested and developed with [Gazebo Harmonic](https://gazebosim.org/docs/harmonic/getstarted/) and [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/) on an [Ubuntu 24.04 (Noble Numbat)](https://releases.ubuntu.com/noble/) virtual machine.
+Source files are located in `src` and are installed to `install`.
 
-## Features
+- **`encoder_sensor`** - Implementation of an incremental encoder for Gazebo as a custom sensor
+- **`encoder_sensor_system`** - System that manages the encoder instances
+- **`micromouse`** - GUI plugin for setting up and interacting with the simulation
+- **`micromouse_system`** - Underlying system that processes commands sent via the GUI plugin and keeps track of lap times
 
-- Import robots from [URDF](http://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main.html) or [SDF](http://sdformat.org/spec?elem=sdf&ver=1.11) files
-- Import Classic 16 x 16 mazes in [Micromouse Online's mazefiles repository](https://github.com/micromouseonline/mazefiles) file format
-- Support for built-in [sensors](https://gazebosim.org/docs/harmonic/sensors/)
-- Keeps track of solve times
-- Implementation of wheel encoder sensor
-- Example robot with range sensors, differential drive and wheel encoders
-- Maze solving algorithm implementation based on the flood fill strategy
+### Setup
 
-## Quick Start
+Make the scripts executable:
 
-This assumes an environment running Ubuntu 24.04, since ROS2 distributions are tightly tied to particular Ubuntu releases.
-
-### Install ROS2
-
-Follow the [ROS2 installation guide](http://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html)
-
-### Install Gazebo
-
-See [Installing Gazebo with ROS](https://gazebosim.org/docs/harmonic/ros_installation/) for detailed instructions.
-
-The following command may be enough:
+Go to the gz_ws folder
 
 ```sh
-sudo apt-get install ros-jazzy-ros-gz
+cd gz_ws
 ```
 
-### Run the simulator
+then
 
-See the README files in the `gz_ws` and `ros_ws` folders for further instructions.
+```sh
+chmod +x buildws.sh
+chmod +x installws.sh
+chmod +x cleanws.sh
+```
+
+Build and install the plugins:
+
+```sh
+./buildws.sh . && ./installws.sh .
+```
+
+Configure Gazebo plugin paths (You can put it in .bashrc):
+
+```sh
+export GZ_GUI_PLUGIN_PATH=~/gz_ws/install/gui
+export GZ_SIM_SYSTEM_PLUGIN_PATH=~/gz_ws/install/system
+```
+
+For Wayland users ([reference](https://gazebosim.org/docs/harmonic/troubleshooting/#wayland-issues)):
+
+```sh
+export QT_QPA_PLATFORM=xcb 
+```
+
+**💡 Tip:** Add the export commands above to `~/.bashrc` to run them automatically on terminal startup.
+
+---
+
+## ros2_ws - ROS2 Workspace
+
+This workspace contains ROS2-related assets and packages for the micromouse simulation.
+
+### Setup and Build
+
+Navigate to the ROS2 workspace:
+
+```sh
+cd ros2_ws
+```
+
+Build all packages:
+
+```sh
+colcon build
+```
+
+Source the workspace:
+
+```sh
+source install/setup.bash
+```
+
+Launch the simulation:
+
+```sh
+ros2 launch micromouse micromouse_launch.py
+```
+
+### Configuration
+
+In the Gazebo window, you'll need to load the following files:
+
+- **Maze map:** `mazefiles/halfsize`
+- **Robot URDF:** `ros2_ws/src/micromouse/urdf/micromouse_robot.urdf`
+
+---
