@@ -1,7 +1,7 @@
 # Ratada - Micromouse Simulation
 
 This repository contains two main workspaces for the Ratada micromouse simulation project.
-
+Ratada is original work of Pedrofza in this Github repo https://github.com/pedrofza/Ratada/tree/main
 ---
 
 ## gz_ws - Gazebo Workspace
