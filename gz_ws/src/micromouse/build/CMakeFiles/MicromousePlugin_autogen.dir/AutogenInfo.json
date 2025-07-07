@@ -1,15 +1,15 @@
 {
-	"BUILD_DIR" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/MicromousePlugin_autogen",
-	"CMAKE_BINARY_DIR" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse",
+	"BUILD_DIR" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/MicromousePlugin_autogen",
+	"CMAKE_BINARY_DIR" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/CMakeLists.txt",
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/CMakeLists.txt",
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystem.cmake.in",
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeSystem.cmake",
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeUnixFindMake.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake",
 		"/usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake",
@@ -64,7 +64,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in",
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/Platform/Linux-Determine-CXX.cmake",
@@ -115,7 +115,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in",
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake",
@@ -140,7 +140,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake",
 		"/usr/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in",
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake",
@@ -159,7 +159,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake",
 		"/usr/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in",
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5ConfigVersion.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5Config.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5ModuleLocation.cmake",
@@ -213,8 +213,6 @@
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QMinimalEglIntegrationPlugin.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QMinimalIntegrationPlugin.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QOffscreenIntegrationPlugin.cmake",
-		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QSvgIconPlugin.cmake",
-		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QSvgPlugin.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QTuioTouchPlugin.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QVncIntegrationPlugin.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QXcbEglIntegrationPlugin.cmake",
@@ -911,23 +909,23 @@
 		"/usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake",
 		"/opt/ros/jazzy/opt/gz_sim_vendor/lib/cmake/gz-sim8-gui/gz-sim8-gui-targets.cmake",
 		"/opt/ros/jazzy/opt/gz_sim_vendor/lib/cmake/gz-sim8-gui/gz-sim8-gui-targets-none.cmake",
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/micromouse.qrc"
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/micromouse.qrc"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse",
-	"DEP_FILE" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/MicromousePlugin_autogen/deps",
+	"CMAKE_SOURCE_DIR" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse",
+	"DEP_FILE" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/MicromousePlugin_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "MicromousePlugin_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/MicromousePlugin.hh",
+			"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/MicromousePlugin.hh",
 			"Mu",
 			"EWIEGA46WW/moc_MicromousePlugin.cpp",
 			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/MicromousePlugin_autogen/include",
-	"MOC_COMPILATION_FILE" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/MicromousePlugin_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/MicromousePlugin_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/MicromousePlugin_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : 
 	[
 		"MicromousePlugin_EXPORTS",
@@ -993,24 +991,24 @@
 		"-c",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/MicromousePlugin_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/MicromousePlugin_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
-		"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/qrc_micromouse.cpp"
+		"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/qrc_micromouse.cpp"
 	],
 	"MULTI_CONFIG" : false,
-	"PARALLEL" : 6,
-	"PARSE_CACHE_FILE" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/MicromousePlugin_autogen.dir/ParseCache.txt",
+	"PARALLEL" : 10,
+	"PARSE_CACHE_FILE" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/MicromousePlugin_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/usr/lib/qt5/bin/moc",
 	"QT_UIC_EXECUTABLE" : "",
 	"QT_VERSION_MAJOR" : 5,
 	"QT_VERSION_MINOR" : 15,
-	"SETTINGS_FILE" : "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/CMakeFiles/MicromousePlugin_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/CMakeFiles/MicromousePlugin_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
 		[
-			"/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/MicromousePlugin.cc",
+			"/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/MicromousePlugin.cc",
 			"Mu",
 			null
 		]

@@ -1,4 +1,4 @@
-# Install script for directory: /home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse
+# Install script for directory: /home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lexciese/Dev/projects/Ratada/gz_ws/src/micromouse/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/abyan/Documents/capstone_anjay/ratze-micromouse/gz_ws/src/micromouse/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
