@@ -22,6 +22,11 @@
 #include "micromouse/direction.hpp"
 #include "micromouse/maze.hpp"
 #include <queue>
+#include <random>
+#include <unordered_map>
+#include <fstream>
+#include <array>
+#include <algorithm>
 
 // The states that a robot can be in.
 struct State
@@ -38,6 +43,56 @@ enum class StateTransition
 };
 
 StateTransition stateFromTo(State from, State to);
+
+// Q-Learning Solver for micromouse maze navigation
+class QLearningMazeRunner
+{
+public:
+    QLearningMazeRunner();
+    void updateQValue(State currentState, StateTransition action, State nextState, double reward, bool isGoalReached);
+    StateTransition chooseAction(State currentState, const IMaze& maze, bool explorationMode = true);
+    void saveQTable(const std::string& filename);
+    void loadQTable(const std::string& filename);
+    void resetEpisode();
+    double getQValue(State state, StateTransition action) const;
+    
+    // Episode management
+    void startNewEpisode();
+    bool isExplorationPhase() const { return _explorationPhase; }
+    void setExplorationPhase(bool exploration) { _explorationPhase = exploration; }
+    int getEpisodeCount() const { return _episodeCount; }
+    
+    // Reward calculation (made public for QPathManager)
+    double calculateReward(State currentState, StateTransition action, State nextState, bool isGoalReached, bool hitWall) const;
+    
+private:
+    static constexpr double LEARNING_RATE = 0.1;
+    static constexpr double DISCOUNT_FACTOR = 0.9;
+    static constexpr double EPSILON = 0.1; // for epsilon-greedy exploration
+    static constexpr double MIN_EPSILON = 0.01;
+    static constexpr double EPSILON_DECAY = 0.995;
+    static constexpr int MAX_EXPLORATION_EPISODES = 50;
+    
+    // Q-table: state -> action -> q-value
+    std::unordered_map<uint64_t, std::array<double, 4>> _qTable;
+    
+    std::random_device _rd;
+    std::mt19937 _gen;
+    std::uniform_real_distribution<> _dis;
+    
+    double _currentEpsilon;
+    int _episodeCount;
+    bool _explorationPhase;
+    
+    uint64_t stateToKey(const State& state) const;
+    State keyToState(uint64_t key) const;
+    int actionToIndex(StateTransition action) const;
+    StateTransition indexToAction(int index) const;
+    double getMaxQValue(State state) const;
+    StateTransition getBestAction(State state, const IMaze& maze) const;
+    bool isValidAction(State state, StateTransition action, const IMaze& maze) const;
+    std::vector<StateTransition> getValidActions(State state, const IMaze& maze) const;
+};
 
 class FloodFillAdvSolver
 {
@@ -62,6 +117,35 @@ private:
     void enqueueBackwardNeighborsIfNotSeed(State s);
     std::vector<State> backwardNeighbors(State s) const;
     std::vector<State> forwardNeighbors(State s) const;
+};
+
+class QPathManager
+{
+public:
+    QPathManager(const IMaze& maze);
+    StateTransition nextMovement();
+    void updatedWalls();
+    void onGoalReached();
+    void onWallHit();
+    State getRobotState() const;
+    bool isInExplorationPhase() const;
+    int getCurrentEpisode() const;
+    void saveProgress(const std::string& filename);
+    void loadProgress(const std::string& filename);
+
+private:
+    QLearningMazeRunner _qLearner;
+    const IMaze& _maze;
+    State _robotState;
+    State _previousState;
+    StateTransition _lastAction;
+    bool _waitingForActionResult;
+    bool _goalReached;
+    bool _wallHit;
+    
+    bool isGoal(State s) const;
+    bool isHome(State s) const;
+    State executeAction(State currentState, StateTransition action) const;
 };
 
 class PathManager

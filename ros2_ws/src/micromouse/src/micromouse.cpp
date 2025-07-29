@@ -48,8 +48,8 @@ static double constexpr TURN_EXTRA_HEADROOM = 0;
 static RobotConstructionSpecification specs;
 static SimpleRobotPoseManager* poseManager;
 
-static LogicMaze maze {classicMicromouseMaze()};
-static PathManager pm(maze);
+static LogicMaze maze {16, 16}; // Start with empty maze for Q-learning exploration
+static QPathManager pm(maze);
 
 static Pose2 startingPose;
 
@@ -74,6 +74,8 @@ static Pose2 goalIdealPose;
 
 static bool wasMovingForward = false;
 static bool shouldFixPosition = false;
+static bool isAtGoalPosition = false;
+static bool hitWallDetected = false;
 
 int main(int argc, char **argv)
 {
@@ -82,6 +84,15 @@ int main(int argc, char **argv)
 	specs.leftWheelRadius = 0.016;
 	specs.rightWheelRadius = 0.016;
 	specs.wheelBaseDistance = ROBOT_YZISE;
+
+    // Initialize maze with boundary walls only (unknown internal structure)
+    surroundMazeWithWalls(maze);
+    maze.placeWall({0, 0}, Direction::right); // Starting wall
+    maze.setHomePosition({0, 0});
+    maze.addGoalPosition({7, 7});
+    maze.addGoalPosition({7, 8});
+    maze.addGoalPosition({8, 7});
+    maze.addGoalPosition({8, 8});
 
     poseManager = new SimpleRobotPoseManager(specs);
     poseManager->setPose({0, 0, M_PI_2});
@@ -234,10 +245,24 @@ void MicromouseNode::update_callback()
 
             if(dist <= 0.01) {
                 waitingForNextMovement = true;
+                
+                // Check if we reached the goal
+                State currentState = pm.getRobotState();
+                if ((currentState.position.x >= 7 && currentState.position.x <= 8) && 
+                    (currentState.position.y >= 7 && currentState.position.y <= 8)) {
+                    isAtGoalPosition = true;
+                    pm.onGoalReached();
+                    RCLCPP_INFO(this->get_logger(), "Goal reached! Episode: %d, Phase: %s", 
+                        pm.getCurrentEpisode(), 
+                        pm.isInExplorationPhase() ? "Exploration" : "Exploitation");
+                }
             }
 
             if (frontMeasurement <= 0.036) {
                 waitingForNextMovement = true;
+                hitWallDetected = true;
+                pm.onWallHit();
+                RCLCPP_WARN(this->get_logger(), "Wall collision detected!");
             }
 
             //Detect walls when entering the cell
