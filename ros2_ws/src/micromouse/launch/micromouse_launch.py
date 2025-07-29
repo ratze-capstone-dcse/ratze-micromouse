@@ -1,29 +1,13 @@
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
 
 
 def generate_launch_description():
     ros_gz_sim = get_package_share_directory('ros_gz_sim')
-
-    # Set environment variables for Gazebo
-    env_vars = [
-        SetEnvironmentVariable(
-            name='GZ_SIM_RESOURCE_PATH',
-            value=os.path.join(get_package_share_directory('micromouse'), 'worlds')
-        ),
-        SetEnvironmentVariable(
-            name='GZ_GUI_PLUGIN_PATH',
-            value=os.path.join('..', '..', '..', 'gz_ws', 'install', 'gui')
-        ),
-        SetEnvironmentVariable(
-            name='GZ_SIM_SYSTEM_PLUGIN_PATH',
-            value=os.path.join('..', '..', '..', 'gz_ws', 'install', 'system')
-        ),
-    ]
 
     world = os.path.join(
         get_package_share_directory('micromouse'),
@@ -66,11 +50,6 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription()
-    
-    # Add environment variables
-    for env_var in env_vars:
-        ld.add_action(env_var)
-    
     ld.add_action(bridge_cmd)
     ld.add_action(gz_cmd)
     ld.add_action(micromouse_node)
