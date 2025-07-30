@@ -19,8 +19,6 @@
 #include <cstring>
 #include <limits>
 
-#define X 16
-#define Y 16
 
 // Q-Learning Implementation
 QLearningMazeRunner::QLearningMazeRunner() 
