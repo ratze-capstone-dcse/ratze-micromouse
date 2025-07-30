@@ -136,7 +136,6 @@ double QLearningMazeRunner::calculateReward(State currentState, StateTransition 
 {
     (void)currentState; // Suppress unused parameter warning
     (void)action;       // Suppress unused parameter warning  
-    (void)nextState;    // Suppress unused parameter warning
     
     double reward = -1.0; // Small negative reward for each step
     
@@ -144,6 +143,13 @@ double QLearningMazeRunner::calculateReward(State currentState, StateTransition 
         reward = 100.0; // Large positive reward for reaching goal
     } else if (hitWall) {
         reward = -50.0; // Large negative reward for hitting wall
+    } else {
+        // Add penalty for visiting already explored areas
+        int visitCount = getVisitCount(nextState);
+        if (visitCount > 0) {
+            // Increase penalty with number of visits
+            reward -= (5.0 * visitCount); // -5 for first revisit, -10 for second, etc.
+        }
     }
     
     return reward;
@@ -187,6 +193,9 @@ void QLearningMazeRunner::startNewEpisode()
 {
     _episodeCount++;
     
+    // Clear visited states for new episode
+    _visitedStates.clear();
+    
     // Decay epsilon
     if (_currentEpsilon > MIN_EPSILON) {
         _currentEpsilon *= EPSILON_DECAY;
@@ -201,6 +210,20 @@ void QLearningMazeRunner::startNewEpisode()
 void QLearningMazeRunner::resetEpisode()
 {
     // Reset any episode-specific state if needed
+    _visitedStates.clear();
+}
+
+void QLearningMazeRunner::markStateVisited(State state)
+{
+    uint64_t key = stateToKey(state);
+    _visitedStates[key]++;
+}
+
+int QLearningMazeRunner::getVisitCount(State state) const
+{
+    uint64_t key = stateToKey(state);
+    auto it = _visitedStates.find(key);
+    return (it != _visitedStates.end()) ? it->second : 0;
 }
 
 void QLearningMazeRunner::saveQTable(const std::string& filename)
@@ -251,12 +274,18 @@ QPathManager::QPathManager(const IMaze& maze)
     _robotState.position = {0, 0};
     _robotState.orientation = Direction::up;
     _qLearner.loadQTable("qtable.dat"); // Try to load previous learning
+    
+    // Mark the initial state as visited
+    _qLearner.markStateVisited(_robotState);
 }
 
 StateTransition QPathManager::nextMovement()
 {
     // If we were waiting for action result, update Q-value
     if (_waitingForActionResult) {
+        // Mark the current state as visited
+        _qLearner.markStateVisited(_robotState);
+        
         double reward = _qLearner.calculateReward(_previousState, _lastAction, _robotState, _goalReached, _wallHit);
         _qLearner.updateQValue(_previousState, _lastAction, _robotState, reward, _goalReached);
         
