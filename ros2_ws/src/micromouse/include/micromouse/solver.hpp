@@ -65,6 +65,10 @@ public:
     // Reward calculation (made public for QPathManager)
     double calculateReward(State currentState, StateTransition action, State nextState, bool isGoalReached, bool hitWall) const;
     
+    // State tracking
+    void markStateVisited(State state);
+    int getVisitCount(State state) const;
+    
 private:
     static constexpr double LEARNING_RATE = 0.1;
     static constexpr double DISCOUNT_FACTOR = 0.9;
@@ -75,6 +79,9 @@ private:
     
     // Q-table: state -> action -> q-value
     std::unordered_map<uint64_t, std::array<double, 4>> _qTable;
+    
+    // Visited states tracking for current episode
+    std::unordered_map<uint64_t, int> _visitedStates; // state -> visit count
     
     std::random_device _rd;
     std::mt19937 _gen;
