@@ -2,3 +2,11 @@ ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
 gz_ws/install/
+
+log/
+**/log/
+
+CMakeCache.txt
+**/CMakeCache.txt
+
+**/build/
