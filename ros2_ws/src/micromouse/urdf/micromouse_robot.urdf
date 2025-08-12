@@ -40,6 +40,9 @@
       <wheel_separation>0.096</wheel_separation>
       <wheel_radius>0.016</wheel_radius>
       <odom_publish_frequency>50</odom_publish_frequency>
+      <publishOdomTF>true</publishOdomTF>
+      <publishWheelTF>true</publishWheelTF>
+      <updateRate>30</updateRate>
     </plugin>
   </gazebo>
   <gazebo reference="dummy_link">

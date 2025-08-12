@@ -29,6 +29,7 @@ using namespace std::chrono_literals;
 #include <cmath>
 #include <cinttypes>
 
+
 static double constexpr MAZE_XSIZE = 0.18;
 static double constexpr MAZE_YSIZE = 0.18;
 static double constexpr WALL_THICKNESS = 0.012;
@@ -111,6 +112,7 @@ MicromouseNode::MicromouseNode()
     };
     micromoue_sub = this->create_subscription<std_msgs::msg::Bool>("micromouse", 10, cb_micromouse);
     update_timer_ = this->create_timer(10ms, std::bind(&MicromouseNode::update_callback, this));
+    tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     RCLCPP_INFO(this->get_logger(), "Micromouse simulation node has been initialised");
 }
 
@@ -280,6 +282,20 @@ void MicromouseNode::update_callback()
             RCLCPP_INFO(this->get_logger(), "defaulting");
         break;
     }
+
+    // Publish the current pose
+    geometry_msgs::msg::TransformStamped transformStamped;
+    transformStamped.header.stamp = this->now();
+    transformStamped.header.frame_id = "dummy_link";
+    transformStamped.child_frame_id = "body_link";
+    transformStamped.transform.translation.x = currentPose.position.x;
+    transformStamped.transform.translation.y = currentPose.position.y;
+    transformStamped.transform.translation.z = 0.0;
+    transformStamped.transform.rotation.x = imu.q.x();
+    transformStamped.transform.rotation.y = imu.q.y();
+    transformStamped.transform.rotation.z = imu.q.z();
+    transformStamped.transform.rotation.w = imu.q.w();
+    tf_broadcaster_->sendTransform(transformStamped);
 }
 
 void MicromouseNode::update_cmd_vel(double linear, double angular)

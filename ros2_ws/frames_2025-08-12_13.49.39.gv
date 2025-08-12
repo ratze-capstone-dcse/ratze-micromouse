@@ -1,0 +1,10 @@
+digraph G {
+"world" -> "micromouse"[label=" Broadcaster: default_authority\nAverage rate: 100.202\nBuffer length: 4.96\nMost recent transform: 36.46\nOldest transform: 31.5\n"];
+"body_link" -> "caster_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"dummy_link" -> "body_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"body_link" -> "extra_weight_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1754981379.0433435"[ shape=plaintext ] ;
+}->"dummy_link";
+}

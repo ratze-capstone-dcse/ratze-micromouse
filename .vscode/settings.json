@@ -2,6 +2,7 @@
     "cmake.sourceDirectory": "/home/lexciese/Dev/projects/Ratada/gz_ws/src/encoder_sensor",
     "files.associations": {
         "*.xml": "xml",
+        "*.world": "xml",
         "array": "cpp",
         "memory": "cpp",
         "format": "cpp",
@@ -10,6 +11,9 @@
         "functional": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "cinttypes": "cpp",
+        "ranges": "cpp"
+    },
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }

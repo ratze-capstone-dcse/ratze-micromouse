@@ -27,24 +27,24 @@ class Imu
 public:
     Imu(rclcpp::Node& parent_node, std::string topic_name);
     double MagZ() const;
-
-private:
-    rclcpp::Node& _parent_node;
-    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr sub;
     // quaternion
     tf2::Quaternion q;
     double mag_x{0.0};
     double mag_y{0.0};
     double mag_z{0.0};
     double mag_w{0.0};
-
+    
     double gyro_x{0.0};
     double gyro_y{0.0};
     double gyro_z{0.0};
-
+    
     double accel_x{0.0};
     double accel_y{0.0};
     double accel_z{0.0};
+
+private:
+    rclcpp::Node& _parent_node;
+    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr sub;
     
 };
 
