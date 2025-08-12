@@ -191,6 +191,7 @@ void MicromouseNode::update_callback()
                     currentPose.position.y = currentIdealPose.position.y;
                 break;
             }
+            
             currentPose.angle = currentIdealPose.angle;
             poseManager->setPose(currentPose);
         }
@@ -257,6 +258,7 @@ void MicromouseNode::update_callback()
                         pm.isInExplorationPhase() ? "Exploration" : "Exploitation");
                 }
             }
+            RCLCPP_INFO(this->get_logger(), "Current Pos: %f %f", currentPose.position.x, currentPose.position.y);
 
             if (frontMeasurement <= 0.036) {
                 waitingForNextMovement = true;

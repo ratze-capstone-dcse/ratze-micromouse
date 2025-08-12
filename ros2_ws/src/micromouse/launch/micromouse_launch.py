@@ -27,6 +27,15 @@ def generate_launch_description():
         'micromouse_bridge.yaml'
     )
 
+    urdf_file = os.path.join(
+        get_package_share_directory('micromouse'),
+        'urdf',
+        'micromouse_robot.urdf'
+    )
+
+    with open(urdf_file, 'r') as infp:
+        robot_desc = infp.read()
+
     bridge_cmd = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -49,8 +58,18 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}]
     )
 
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[
+            {'robot_description': robot_desc},
+            {'use_sim_time': True}
+        ]
+    )
+
     ld = LaunchDescription()
     ld.add_action(bridge_cmd)
     ld.add_action(gz_cmd)
     ld.add_action(micromouse_node)
+    ld.add_action(robot_state_publisher)
     return ld
