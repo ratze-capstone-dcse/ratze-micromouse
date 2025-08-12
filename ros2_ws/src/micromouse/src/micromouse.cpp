@@ -291,10 +291,13 @@ void MicromouseNode::update_callback()
     transformStamped.transform.translation.x = currentPose.position.x;
     transformStamped.transform.translation.y = currentPose.position.y;
     transformStamped.transform.translation.z = 0.0;
-    transformStamped.transform.rotation.x = imu.q.x();
-    transformStamped.transform.rotation.y = imu.q.y();
-    transformStamped.transform.rotation.z = imu.q.z();
-    transformStamped.transform.rotation.w = imu.q.w();
+    // Create quaternion for 90 degree rotation around Z axis (to the right)
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, currentPose.angle);
+    transformStamped.transform.rotation.x = q.x();
+    transformStamped.transform.rotation.y = q.y();
+    transformStamped.transform.rotation.z = q.z();
+    transformStamped.transform.rotation.w = q.w();
     tf_broadcaster_->sendTransform(transformStamped);
 }
 
