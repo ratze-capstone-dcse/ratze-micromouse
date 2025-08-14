@@ -512,7 +512,98 @@ namespace micromouse_hardware {
     publishOdometry(current_time, distance);
     }
 
-        
+    void RatzeHardwareInterface::publishOdometry(const rclcpp::Time& current_time, double distance) {
+        // create quaternion from yaw
+        tf2::Quaternion q;
+        q.setRPY(0, 0, odom_yaw_);
+
+        // publish transform
+        auto transform = geometry_msgs::msg::TransformStamped();
+        transform.header.stamp = current_time;
+        transform.header.frame_id = "odom";
+        transform.child_frame_id = "base_link";
+        transform.transform.translation.x = x_;
+        transform.transform.translation.y = y_;
+        transform.transform.translation.z = 0.0;
+        transform.transform.rotation.x = q.x();
+        transform.transform.rotation.y = q.y();
+        transform.transform.rotation.z = q.z();
+        transform.transform.rotation.w = q.w();
+
+        tf_broadcaster_->sendTransform(transform);
+
+        // publish odometry message
+        auto odom_msg = nav_msgs::msg::Odometry();
+        odom_msg.header.stamp = current_time;
+        odom_msg.header.frame_id = "odom";
+        odom_msg.child_frame_id = "base_link";
+        odom_msg.pose.pose.position.x = x_;
+        odom_msg.pose.pose.position.y = y_;
+        odom_msg.pose.pose.position.z = 0.0;
+
+        // set position 
+        odom_msg.pose.pose.orientation.x = q.x();
+        odom_msg.pose.pose.orientation.y = q.y();
+        odom_msg.pose.pose.orientation.z = q.z();
+        odom_msg.pose.pose.orientation.w = q.w();
+
+        // calculate velocity
+        double dt = (current_time - last_odom_time_).seconds();
+        if (dt > 0) {
+            odom_msg.twist.twist.linear.x = distance / dt; // linear velocity
+            odom_msg.twist.twist.linear.y = 0.0; // angular velocity not calculated, using imu for heading
+
+            // set covariance
+            for (int i = 0; i < 36; ++i) {
+                odom_msg.pose.covariance[i] = 0.0;
+                odom_msg.twist.covariance[i] = 0.0;
+            }
+            
+            // position covariance
+            odom_msg.pose.covariance[0] = 0.01; // x
+            odom_msg.pose.covariance[7] = 0.01; // y
+            odom_msg.pose.covariance[35] = 0.02; // z
+
+            // velocity covariance
+            odom_msg.twist.covariance[0] = 0.01; // linear x
+            odom_msg.twist.covariance[35] = 0.01; // angular z
+
+        }
+        // publish odometry message
+        odom_pub_->publish(odom_msg);
+
+        last_odom_time_ = current_time;
+    }
+    void RatzeHardwareInterface::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg) {
+        // convert twist to motor commands
+        double linear = msg->linear.x;
+        double angular = msg->angular.z;
+
+        if(fabs(linear) < 0.01 && fabs(angular) < 0.01) {
+            stop();
+            return;
+        }
+
+        const int MAX_SPEED = 255
+        int speed = static_cast<int>(fabs(linear) * MAX_SPEED);
+        if (speed > MAX_SPEED) {
+            speed = MAX_SPEED;
+        }
+          // Simple differential drive control
+        if (fabs(angular) > 0.1) {
+            if (angular > 0) {
+            turnLeft(speed);
+            } else {
+            turnRight(speed);
+            }
+        } else if (linear > 0) {
+            moveForward(speed);
+        } else if (linear < 0) {
+            moveBackward(speed);
+        }
+
+    }
+
     bool RatzeHardwareInterface::moveForward(int speed) {
     return sendCommand('F', speed) && waitForAck('F');
     }
