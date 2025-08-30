@@ -10,7 +10,8 @@ def generate_launch_description():
     hardware_interface = Node(
         package='hardware_interface',
         executable='hardware_interface_node',
-        parameters=[{'use_sim_time': True}]
+        name= 'hardware_interface',
+        output='screen',
     )
     
     nodes = [hardware_interface]
