@@ -2,7 +2,7 @@
 
 using namespace std::chrono_literals;
 
-namespace micromouse_hardware {
+namespace ratze_hardware_interface {
 
     RatzeHardwareInterface::RatzeHardwareInterface(): Node("ratze_hardware_interface"), connected_(false), running_(false),
     last_odom_time_(this->now())
@@ -84,7 +84,7 @@ namespace micromouse_hardware {
             auto start_time = std::chrono::steady_clock::now();
 
             while (std::chrono::steady_clock::now() - start_time < std::chrono::seconds(5)) {
-                std::string line = readline(1000);
+                std::string line = readLine(1000);
                 if(!line.empty()) {
                     RCLCPP_INFO(this->get_logger(), "Received: %s", line.c_str());
                     if (line.find("READY") != std::string::npos) {
@@ -125,8 +125,8 @@ namespace micromouse_hardware {
             if (serial_port_ && serial_port_->IsOpen()) {
                 serial_port_->Close();
             }
-        } catch (const LibSerial::SerialPortException &e) {
-            RCLCPP_ERROR(this->get_logger(), "Failed to close serial port: %s", e.what());
+        } catch (const std::exception &ex) {
+            RCLCPP_ERROR(this->get_logger(), "Failed to close serial port: %s", ex.what());
         }
         connected_ = false;
         RCLCPP_INFO(this->get_logger(), "Disconnected from %s", port_.c_str());
@@ -180,30 +180,32 @@ namespace micromouse_hardware {
 
     std::string RatzeHardwareInterface::readLine(int timeout_ms) {
         if (!connected_ || !serial_port_->IsOpen()) {
-            return "";
-        }
-        std::string line;
-        try {
-            // Set timeout for ReadLine
-        auto timeout = LibSerial::Timeout::Timeout_t(timeout_ms);
-        line = serial_port_->ReadLine(timeout);
+        return "";
+    }
     
-        // Trim any trailing CR/LF
+    std::string line;
+    try {
+        // Set timeout first
+        serial_port_->SetVTime(timeout_ms / 100); // VTime is in deciseconds
+        
+        // Then read a line with proper arguments
+        serial_port_->ReadLine(line, '\n');
+        
+        // Trim CR/LF
         line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-        line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
         
         return line;
-        }
-        catch (const LibSerial::ReadTimeout &) {
-            return "";
-        } catch (const std::exception &e) {
-            RCLCPP_ERROR(this->get_logger(), "Exception: %s", e.what());
-            return "";
-        }
+    }
+    catch (const LibSerial::ReadTimeout &) {
+        return "";
+    } catch (const std::exception &e) {
+        RCLCPP_ERROR(this->get_logger(), "Exception: %s", e.what());
+        return "";
+    }
     }
     
     
-    void RatzeHardwareInterface::readerThread()
+    void RatzeHardwareInterface::readThread()
     {
     while (running_ && connected_) {
         std::string line = readLine();
@@ -299,6 +301,12 @@ namespace micromouse_hardware {
     // Make a local copy to avoid holding the mutex during publishing
     float heading, roll, pitch, yaw;
     int sys_calib, gyro_calib, accel_calib, mag_calib;
+
+    (void)roll;  // Mark as intentionally unused
+    (void)pitch;
+    (void)yaw;
+    (void)gyro_calib;
+    (void)accel_calib;
     
     {
         std::lock_guard<std::mutex> lock(data_mutex_);
@@ -584,7 +592,7 @@ namespace micromouse_hardware {
             return;
         }
 
-        const int MAX_SPEED = 255
+        const int MAX_SPEED = 255;
         int speed = static_cast<int>(fabs(linear) * MAX_SPEED);
         if (speed > MAX_SPEED) {
             speed = MAX_SPEED;
@@ -638,5 +646,18 @@ namespace micromouse_hardware {
 
     bool RatzeHardwareInterface::requestSensorData() {
     return sendCommand('G') && waitForAck('G');
+    }
+
+    void RatzeHardwareInterface::timerCallback()
+    {
+        // Periodically request sensor data
+        if (connected_) {
+            requestSensorData();
+
+            // Publish sensor data
+            publishImuData();
+            publishTofData();
+            publishEncoderData();
+        }
     }
 } // namespace micromouse_hardware

@@ -14,6 +14,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SERIAL REQUIRED libserial)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -27,15 +29,13 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-# Create hardware interface library
-add_library(ratze_hardware_interface
-  src/ratze_hardware_interface.cpp
+# Create node executable
+add_executable(hardware_interface_node 
+  src/hardware_interface_node.cpp
+  src/hardware_interface.cpp
 )
-target_include_directories(ratze_hardware_interface PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-ament_target_dependencies(ratze_hardware_interface
+
+ament_target_dependencies(hardware_interface_node
   rclcpp
   sensor_msgs
   std_msgs
@@ -43,32 +43,31 @@ ament_target_dependencies(ratze_hardware_interface
   nav_msgs
   tf2
   tf2_ros
+
 )
 
-# Create node executable
-add_executable(hardware_interface_node 
-  src/hardware_interface_node.cpp
+target_link_libraries(hardware_interface_node
+  ${SERIAL_LIBRARIES}
 )
+
 target_include_directories(hardware_interface_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(hardware_interface_node
-  ratze_hardware_interface
-)
+
 
 # Install targets
 install(TARGETS
-  ratze_hardware_interface
+  hardware_interface_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-install(TARGETS
-  hardware_interface_node
-  DESTINATION lib/${PROJECT_NAME}
-)
+# install(TARGETS
+#   hardware_interface_node
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 # Install headers
 install(DIRECTORY

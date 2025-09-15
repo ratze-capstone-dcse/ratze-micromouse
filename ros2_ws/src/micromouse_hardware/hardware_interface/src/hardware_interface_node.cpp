@@ -3,7 +3,7 @@
 int main (int argc, char** argv) {
     rclcpp::init(argc, argv);
     
-    auto node = std::make_shared<micromouse_hardware::RatzeHardwareInterface>();
+    auto node = std::make_shared<ratze_hardware_interface::RatzeHardwareInterface>();
     rclcpp::spin(node);
     
     rclcpp::shutdown();

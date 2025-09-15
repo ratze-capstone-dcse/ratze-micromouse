@@ -48,7 +48,7 @@ private:
   std::string port_;
   int baudrate_;
   std::atomic<bool> connected_;
-  std::thread reader_thread_;
+  std::thread read_thread_;
   std::atomic<bool> running_;
 
   // Sensor data storage
@@ -84,7 +84,7 @@ private:
   bool sendCommand(char cmd, int value = 0);
   bool waitForAck(char cmd, int timeout_ms = 1000);
   std::string readLine(int timeout_ms = 100);  // Updated to use LibSerial timeout
-  void readerThread();
+  void readThread();
   
   // Command methods
   bool moveForward(int speed);
