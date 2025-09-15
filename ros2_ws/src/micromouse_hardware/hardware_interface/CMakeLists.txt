@@ -64,10 +64,10 @@ install(TARGETS
   RUNTIME DESTINATION bin
 )
 
-# install(TARGETS
-#   hardware_interface_node
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+install(TARGETS
+  hardware_interface_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 # Install headers
 install(DIRECTORY
