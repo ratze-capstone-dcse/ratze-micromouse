@@ -79,24 +79,6 @@ namespace ratze_hardware_interface {
             // flush data in serial buffer
             serial_port_->FlushIOBuffers();
 
-            // wait for ready message 
-            bool ready = false;
-            auto start_time = std::chrono::steady_clock::now();
-
-            while (std::chrono::steady_clock::now() - start_time < std::chrono::seconds(5)) {
-                std::string line = readLine(1000);
-                if(!line.empty()) {
-                    RCLCPP_INFO(this->get_logger(), "Received: %s", line.c_str());
-                    if (line.find("READY") != std::string::npos) {
-                        ready = true;
-                        break;
-                    }
-                }
-            }
-            if (!ready) {
-                RCLCPP_ERROR(this->get_logger(), "Device is not ready after 5 seconds");
-                return false;
-            }
             connected_ = true;
             running_ = true;
 
@@ -412,13 +394,18 @@ namespace ratze_hardware_interface {
     range_msg.field_of_view = 0.44;  // ~25 degrees in radians
     range_msg.min_range = 0.05;      // 5cm
     range_msg.max_range = 2.0;       // 2m
+
+    std::stringstream ss;
     
     for (size_t i = 0; i < distances.size() && i < tof_pubs_.size(); ++i) {
         range_msg.header.stamp = this->now();
         range_msg.header.frame_id = "tof_" + std::to_string(i);
         range_msg.range = distances[i] / 1000.0;  // convert mm to m
+
+        ss << "Publishing ToF data for sensor " << i << ": " << range_msg.range << " m\n";
         tof_pubs_[i]->publish(range_msg);
     }
+    RCLCPP_INFO(this->get_logger(), "%s", ss.str().c_str());
     }
 
     bool RatzeHardwareInterface::parseEncoderData(const std::string& line)
@@ -473,6 +460,9 @@ namespace ratze_hardware_interface {
     // Publish raw encoder counts
     auto encoder_msg = std_msgs::msg::Int32MultiArray();
     encoder_msg.data = {e1, e2, e3, e4};
+
+    RCLCPP_INFO(this->get_logger(), "Publishing Encoders: %d, %d, %d, %d", e1, e2, e3, e4);
+
     encoder_pub_->publish(encoder_msg);
     
     // Update odometry
@@ -502,8 +492,8 @@ namespace ratze_hardware_interface {
     last_encoder_[3] = e4;
     
     // Calculate average rotation for each side (left: 0,2; right: 1,3)
-    double left_ticks = (delta_enc[0] + delta_enc[2]) / 2.0;
-    double right_ticks = (delta_enc[1] + delta_enc[3]) / 2.0;
+    double right_ticks = (delta_enc[0] + delta_enc[2]) / 2.0;
+    double left_ticks = (delta_enc[1] + delta_enc[3]) / 2.0;
     
     // Convert to distance
     double left_distance = (left_ticks / TICKS_PER_REVOLUTION) * 2 * M_PI * WHEEL_RADIUS;
@@ -513,8 +503,8 @@ namespace ratze_hardware_interface {
     double distance = (left_distance + right_distance) / 2.0;
     
     // Update position using heading from IMU
-    x_ += distance * cos(odom_yaw_);
-    y_ += distance * sin(odom_yaw_);
+    x_ += distance * sin(odom_yaw_);
+    y_ += distance * cos(odom_yaw_);
     
     // Create and publish odometry message
     publishOdometry(current_time, distance);
@@ -652,7 +642,7 @@ namespace ratze_hardware_interface {
     {
         // Periodically request sensor data
         if (connected_) {
-            requestSensorData();
+            // requestSensorData();
 
             // Publish sensor data
             publishImuData();

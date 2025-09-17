@@ -75,8 +75,8 @@ private:
   
   // Constants
   const double WHEEL_RADIUS = 0.035;  // 3.5cm radius
-  const double TICKS_PER_REVOLUTION = 360.0;  // encoder ticks per wheel revolution
-  const double WHEEL_BASE = 0.18;  // distance between wheels
+  const double TICKS_PER_REVOLUTION = 100;  // encoder ticks per wheel revolution
+  const double WHEEL_BASE = 0.145;  // distance between wheels
 
   // Serial connection methods
   bool connect();
