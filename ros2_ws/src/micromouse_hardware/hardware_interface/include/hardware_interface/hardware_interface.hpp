@@ -15,6 +15,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "sensor_msgs/msg/range.hpp"
+#include "sensor_msgs/msg/laser_scan.hpp"
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -39,6 +40,7 @@ private:
   std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> tof_pubs_;
   rclcpp::Publisher<std_msgs::msg::Int32MultiArray>::SharedPtr encoder_pub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
@@ -107,6 +109,7 @@ private:
   void publishTofData();
   void publishEncoderData();
   void publishOdometry(const rclcpp::Time& current_time, double distance);
+  void publishLaserScan(const std::vector<uint16_t>& distances);
   
   // ROS callback methods
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
