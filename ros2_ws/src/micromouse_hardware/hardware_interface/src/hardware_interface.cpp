@@ -464,23 +464,14 @@ namespace ratze_hardware_interface
 
         std::stringstream ss;
 
-        // calibration offset in mm for tof sensor
-        distances[0] -= 30;
-        distances[1] -= 10;
-        distances[2] += 0;
-        distances[3] += 0;
-        distances[4] += 0;
-        distances[5] -= 20;
-        distances[6] += 0;
-
         for (size_t i = 0; i < distances.size() && i < tof_pubs_.size(); ++i)
         {
             range_msg.header.stamp = this->now();
             range_msg.header.frame_id = "tof_" + std::to_string(i);
-            range_msg.range = distances[i] / 10.0; // convert mm to cm
+            range_msg.range = distances[i] / 1000.0; // convert mm to m
 
             // Individual log for each sensor
-            RCLCPP_INFO(this->get_logger(), "ToF sensor %zu: %.3f cm", i, range_msg.range);
+            RCLCPP_INFO(this->get_logger(), "ToF sensor %zu: %.3f m", i, range_msg.range);
             tof_pubs_[i]->publish(range_msg);
         }
 
@@ -492,7 +483,7 @@ namespace ratze_hardware_interface
     {
         auto scan_msg = sensor_msgs::msg::LaserScan();
         scan_msg.header.stamp = this->now();
-        scan_msg.header.frame_id = "laser";
+        scan_msg.header.frame_id = "ray_5_link";
 
         // Configure scan parameters
         scan_msg.angle_min = -M_PI / 2.0;  // -90 degrees
@@ -504,28 +495,58 @@ namespace ratze_hardware_interface
         scan_msg.time_increment = 0.0;
         scan_msg.scan_time = 0.1;  // 10Hz scan rate
 
-        scan_msg.range_min = 0.05;  // 5cm
+        scan_msg.range_min = 0.01;  // 1cm
         scan_msg.range_max = 2.0;   // 2m
 
         // Initialize ranges array with inf values
         scan_msg.ranges.resize(7, std::numeric_limits<float>::infinity());
 
-        // Fill in actual range values from ToF sensors
-        // Assuming sensors are arranged from left to right (sensor 0 at -90°, sensor 6 at +90°)
-        for (size_t i = 0; i < distances.size() && i < 7; ++i)
-        {
-            float range_meters = distances[i] / 1000.0; // mm to meters
+        float range_meters = distances[2] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[0] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[0] = range_meters;
 
-            // Filter out invalid readings
-            if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
-            {
-                scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
-            }
-            else
-            {
-                scan_msg.ranges[i] = range_meters;
-            }
-        }
+        range_meters = distances[3] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[1] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[1] = range_meters;
+        
+
+        range_meters = distances[4] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[2] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[2] = range_meters;
+
+        range_meters = distances[5] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[3] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[3] = range_meters;
+        
+
+        range_meters = distances[6] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[4] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[4] = range_meters;
+        
+
+        range_meters = distances[1] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[5] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[5] = range_meters;
+        
+
+        range_meters = distances[0] / 1000.0; // mm to meters
+        if (range_meters < scan_msg.range_min || range_meters > scan_msg.range_max)
+            scan_msg.ranges[6] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[6] = range_meters;
+        
 
         // Publish the scan
         laser_pub_->publish(scan_msg);
