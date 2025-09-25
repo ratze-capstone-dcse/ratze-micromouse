@@ -167,7 +167,7 @@ namespace ratze_hardware_interface
 
         while (std::chrono::steady_clock::now() - start_time < std::chrono::milliseconds(timeout_ms))
         {
-            std::string line = readLine(100);
+            std::string line = readLine(500);
 
             if (!line.empty())
             {
@@ -347,7 +347,7 @@ namespace ratze_hardware_interface
 
         {
             std::lock_guard<std::mutex> lock(data_mutex_);
-            heading = heading_;
+            heading = (heading_) * -1.0; // Invert heading to match ROS coordinate system
             roll = roll_;
             pitch = pitch_;
             yaw = yaw_;
@@ -583,8 +583,8 @@ namespace ratze_hardware_interface
         double distance = (left_distance + right_distance) / 2.0;
 
         // Update position using heading from IMU
-        x_ += distance * sin(odom_yaw_);
-        y_ += distance * cos(odom_yaw_);
+        x_ += distance * cos(odom_yaw_);
+        y_ += distance * sin(odom_yaw_);
 
         // Create and publish odometry message
         publishOdometry(current_time, distance);
