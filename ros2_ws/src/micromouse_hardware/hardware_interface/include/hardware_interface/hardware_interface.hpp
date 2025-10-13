@@ -23,6 +23,7 @@
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "std_msgs/msg/char.hpp"
 
 namespace ratze_hardware_interface
 {
@@ -42,6 +43,7 @@ private:
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
+  rclcpp::Subscription<std_msgs::msg::Char>::SharedPtr user_command_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
   
@@ -113,6 +115,7 @@ private:
   
   // ROS callback methods
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
+  void userCommandCallback(const std_msgs::msg::Char::SharedPtr msg);
   void timerCallback();
 };
 

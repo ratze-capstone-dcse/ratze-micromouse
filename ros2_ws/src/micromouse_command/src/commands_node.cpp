@@ -1,4 +1,5 @@
 #include <micromouse_command/commands.hpp>
+#include <std_msgs/msg/char.hpp>
 
 namespace micromouse_command
 {
@@ -6,6 +7,7 @@ namespace micromouse_command
     UserCommandNode::UserCommandNode() : Node("user_command_node")
     {
         cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+        char_pub_ = this->create_publisher<std_msgs::msg::Char>("user_command", 10);
 
         // start thread to handle user input
         std::thread input_thread(&UserCommandNode::handleUserInput, this);
@@ -27,7 +29,7 @@ namespace micromouse_command
         std::string input;
         while (rclcpp::ok())
         {
-            std::cout << "Enter command (F, B, L, R, S): ";
+            std::cout << "Enter command (F, B, L, R, S, E, C): ";
             std::getline(std::cin, input);
             RCLCPP_INFO(this->get_logger(), "User input: %s", input.c_str());
 
@@ -53,6 +55,16 @@ namespace micromouse_command
             {
                 msg.linear.x = 0.0;
                 msg.angular.z = 0.0;
+            }
+            else if (input == "E") {
+                std_msgs::msg::Char char_msg;
+                char_msg.data = 'E';
+                char_pub_->publish(char_msg);
+            }
+            else if (input == "C") {
+                std_msgs::msg::Char char_msg;
+                char_msg.data = 'C';
+                char_pub_->publish(char_msg);
             }
             else
             {

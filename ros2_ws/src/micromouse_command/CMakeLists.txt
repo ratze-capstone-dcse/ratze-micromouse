@@ -26,8 +26,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-add_executable(command_node src/commands_node.cpp)
-ament_target_dependencies(command_node rclcpp std_msgs geometry_msgs)
-install(TARGETS command_node DESTINATION lib/${PROJECT_NAME})
+add_executable(commands_node src/commands_node.cpp)
+ament_target_dependencies(commands_node rclcpp std_msgs geometry_msgs)
+install(TARGETS commands_node DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

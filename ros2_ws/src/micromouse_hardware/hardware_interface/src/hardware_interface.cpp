@@ -41,6 +41,9 @@ namespace ratze_hardware_interface
         cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>(
             "cmd_vel", 10,
             std::bind(&RatzeHardwareInterface::cmdVelCallback, this, std::placeholders::_1));
+        user_command_ = this->create_subscription<std_msgs::msg::Char>(
+            "user_command", 10,
+            std::bind(&RatzeHardwareInterface::userCommandCallback, this, std::placeholders::_1));
 
         // Create tf broadcaster
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -132,6 +135,17 @@ namespace ratze_hardware_interface
         }
         connected_ = false;
         RCLCPP_INFO(this->get_logger(), "Disconnected from %s", port_.c_str());
+    }
+
+    void RatzeHardwareInterface::userCommandCallback(const std_msgs::msg::Char::SharedPtr msg)
+    {
+        try {
+            serial_port_->Write(std::string(1, msg->data));
+            RCLCPP_INFO(this->get_logger(), "Received user command: %c", msg->data);
+        }
+        catch (const std::exception &ex) {
+            RCLCPP_ERROR(this->get_logger(), "Failed to send user command: %s", ex.what());
+        }
     }
 
     bool RatzeHardwareInterface::sendCommand(char cmd, int value)
