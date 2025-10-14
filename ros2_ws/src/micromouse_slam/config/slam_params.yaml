@@ -1,0 +1,30 @@
+slam_toolbox:
+  ros__parameters:
+    use_sim_time: false
+    map_frame: map
+    base_frame: base_link
+    odom_frame: odom
+    scan_topic: /scan
+
+    resolution: 0.01
+    max_laser_range: 2.0
+
+    # update frequency
+    minimum_time_interval: 0.2
+    transform_publish_period: 0.05
+    map_update_interval: 3.0
+
+    # use odometry
+    use_odometry: true
+    use_scan_matching: true
+    use_scan_barycenter: true
+
+    # maze settings, adjust later
+
+    # loop closure settings
+    loop_search_maximum_distance: 3.0
+
+
+    # scan matcher settings
+    ceres_loss_function: "HuberLoss"
+    ceres_huber_loss_delta: 0.1
