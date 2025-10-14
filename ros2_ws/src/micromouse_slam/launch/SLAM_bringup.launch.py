@@ -39,7 +39,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         output='screen',
-        arguments=['-d', os.path.join(config_dir, 'slam.rviz')],  # Assuming you have a predefined RViz config
+       
     )
     
     return LaunchDescription([
