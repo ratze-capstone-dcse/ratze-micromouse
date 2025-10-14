@@ -48,6 +48,9 @@ namespace ratze_hardware_interface
         // Create tf broadcaster
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
+        // create later transform broadcaster
+        laser_transform_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+
         // Initialize SerialPort object
         serial_port_ = std::make_unique<LibSerial::SerialPort>();
 
@@ -566,6 +569,25 @@ namespace ratze_hardware_interface
         laser_pub_->publish(scan_msg);
     }
 
+    void RatzeHardwareInterface::publishLaserTransform(){
+        // publish transform for laser scanner
+        auto transform = geometry_msgs::msg::TransformStamped();
+        transform.header.stamp = this->now();
+        transform.header.frame_id = "base_link";
+        transform.child_frame_id = "ray_5_link";
+        transform.transform.translation.x = 0.1; // adjust as needed
+        transform.transform.translation.y = 0.0;
+        transform.transform.translation.z = 0.05; // adjust as needed
+        tf2::Quaternion q;
+        q.setRPY(0, 0, 0);
+        transform.transform.rotation.x = q.x();
+        transform.transform.rotation.y = q.y();
+        transform.transform.rotation.z = q.z();
+        transform.transform.rotation.w = q.w();
+
+        laser_transform_broadcaster_->sendTransform(transform);
+    }
+
     bool RatzeHardwareInterface::parseEncoderData(const std::string &line)
     {
         // Format: ENC,m1,m2,m3,m4
@@ -825,15 +847,25 @@ namespace ratze_hardware_interface
 
     void RatzeHardwareInterface::timerCallback()
     {
+        static rclcpp::Time last_scan_time = this->now();
+        rclcpp::Time current_time = this->now();
         // Periodically request sensor data
         if (connected_)
         {
             // requestSensorData();
 
+            publishLaserTransform();
+
             // Publish sensor data
             publishImuData();
-            publishTofData();
+            // publishTofData();
             publishEncoderData();
+
+            if ((current_time - last_scan_time).seconds() >= 0.5)
+            {
+                publishTofData();
+                last_scan_time = current_time;
+            }
         }
     }
 } // namespace micromouse_hardware

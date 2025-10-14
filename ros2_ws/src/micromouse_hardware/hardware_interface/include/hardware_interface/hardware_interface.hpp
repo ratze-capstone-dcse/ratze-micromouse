@@ -46,6 +46,8 @@ private:
   rclcpp::Subscription<std_msgs::msg::Char>::SharedPtr user_command_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+
+  std::unique_ptr<tf2_ros::TransformBroadcaster> laser_transform_broadcaster_;
   
   // Serial communication
   std::unique_ptr<LibSerial::SerialPort> serial_port_;  // LibSerial object
@@ -112,6 +114,8 @@ private:
   void publishEncoderData();
   void publishOdometry(const rclcpp::Time& current_time, double distance);
   void publishLaserScan(const std::vector<uint16_t>& distances);
+  void publishLaserTransform();
+
   
   // ROS callback methods
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
