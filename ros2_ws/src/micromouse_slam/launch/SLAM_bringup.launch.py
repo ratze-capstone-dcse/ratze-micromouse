@@ -26,7 +26,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(os.path.join(
             slam_dir, 'launch', 'online_async_launch.py')),
         launch_arguments={
-            'use_sim_time': 'true',
+            'use_sim_time': 'false',
             'slam_params_file': LaunchConfiguration('slam_params_file')  # Use LaunchConfiguration
         }.items()
     )

@@ -861,7 +861,7 @@ namespace ratze_hardware_interface
             // publishTofData();
             publishEncoderData();
 
-            if ((current_time - last_scan_time).seconds() >= 0.5)
+            if ((current_time - last_scan_time).seconds() >= 0.1)
             {
                 publishTofData();
                 last_scan_time = current_time;
