@@ -20,6 +20,7 @@
 #include "std_msgs/msg/float32.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "nav_msgs/msg/odometry.hpp"
+#include "nav_msgs/msg/path.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
@@ -41,6 +42,7 @@ private:
   std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> tof_pubs_;
   rclcpp::Publisher<std_msgs::msg::Int32MultiArray>::SharedPtr encoder_pub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
   rclcpp::Subscription<std_msgs::msg::Char>::SharedPtr user_command_;
@@ -79,6 +81,8 @@ private:
   int32_t encoder3_ = 0;
   int32_t encoder4_ = 0;
   
+  nav_msgs::msg::Path path_msg_;
+
   // Odometry calculation
   double x_ = 0.0, y_ = 0.0, odom_yaw_ = 0.0;
   double last_encoder_[4] = {0.0, 0.0, 0.0, 0.0};
@@ -119,6 +123,7 @@ private:
   void publishTofData();
   void publishEncoderData();
   void publishOdometry(const rclcpp::Time& current_time, double distance, double delta_theta);
+  void publishPath();
   void publishLaserScan(const std::vector<uint16_t>& distances);
   void publishLaserTransform();
 

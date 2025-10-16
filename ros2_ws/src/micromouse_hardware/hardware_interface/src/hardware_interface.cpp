@@ -1,4 +1,5 @@
 #include <hardware_interface/hardware_interface.hpp>
+#include <nav_msgs/msg/path.hpp>
 
 using namespace std::chrono_literals;
 
@@ -41,6 +42,7 @@ namespace ratze_hardware_interface
 
         encoder_pub_ = this->create_publisher<std_msgs::msg::Int32MultiArray>("encoder/counts", 10);
         odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
+        path_pub_ = this->create_publisher<nav_msgs::msg::Path>("path", 10);
 
         // Create subscribers
         cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>(
@@ -55,6 +57,8 @@ namespace ratze_hardware_interface
 
         // create later transform broadcaster
         laser_transform_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+
+        path_msg_.header.frame_id = "odom";
 
         // Initialize SerialPort object
         serial_port_ = std::make_unique<LibSerial::SerialPort>();
@@ -370,9 +374,6 @@ namespace ratze_hardware_interface
         q.setRPY(roll, pitch, yaw);
         q.normalize();
 
-        RCLCPP_ERROR(this->get_logger(), "YAWWWWW: %f", yaw);
-
-
         imu_msg.orientation.x = q.x();
         imu_msg.orientation.y = q.y();
         imu_msg.orientation.z = q.z();
@@ -678,9 +679,9 @@ namespace ratze_hardware_interface
         double delta_theta = (right_distance - left_distance) / WHEEL_BASE;
 
         // Update position and orientation
-        odom_yaw_ += delta_theta;
-        x_ += distance * cos(odom_yaw_);
-        y_ += distance * sin(odom_yaw_);
+        // odom_yaw_ += delta_theta;
+        x_ += distance * cos(yaw_);
+        y_ += distance * sin(yaw_);
 
         // Create and publish odometry message
         publishOdometry(current_time, distance, delta_theta);
@@ -766,6 +767,26 @@ namespace ratze_hardware_interface
         odom_pub_->publish(odom_msg);
 
         last_odom_time_ = current_time;
+    }
+    void RatzeHardwareInterface::publishPath()
+    {
+        path_msg_.header.stamp = this->now();
+        geometry_msgs::msg::PoseStamped pose_stamped;
+        pose_stamped.header.stamp = this->now();
+        pose_stamped.header.frame_id = "odom";
+        pose_stamped.pose.position.x = x_;
+        pose_stamped.pose.position.y = y_;
+        pose_stamped.pose.position.z = 0.0;
+
+        tf2::Quaternion q;
+        q.setRPY(0, 0, odom_yaw_);
+        pose_stamped.pose.orientation.x = q.x();
+        pose_stamped.pose.orientation.y = q.y();
+        pose_stamped.pose.orientation.z = q.z();
+        pose_stamped.pose.orientation.w = q.w();
+
+        path_msg_.poses.push_back(pose_stamped);
+        path_pub_->publish(path_msg_);
     }
     void RatzeHardwareInterface::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
     {
@@ -867,6 +888,7 @@ namespace ratze_hardware_interface
             publishImuData();
             // publishTofData();
             publishEncoderData();
+            publishPath();
 
             if ((current_time - last_scan_time).seconds() >= 0.1)
             {
