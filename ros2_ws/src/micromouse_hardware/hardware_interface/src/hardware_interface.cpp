@@ -306,11 +306,11 @@ namespace ratze_hardware_interface
             }
         }
 
-        if (values.size() < 4 || calib.size() < 4)
-        {
-            RCLCPP_ERROR(this->get_logger(), "Incomplete IMU data: %s", line.c_str());
-            return false;
-        }
+        // if (values.size() < 4 || calib.size() < 4)
+        // {
+        //     RCLCPP_ERROR(this->get_logger(), "Incomplete IMU data: %s", line.c_str());
+        //     return false;
+        // }
 
         // Store data and publish
         {
