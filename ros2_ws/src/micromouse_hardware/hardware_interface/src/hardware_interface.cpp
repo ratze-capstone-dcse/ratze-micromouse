@@ -357,12 +357,12 @@ namespace ratze_hardware_interface
         imu_msg.header.frame_id = "base_link";
 
         // Convert roll, pitch, yaw to quaternion
-        double heading_rad = yaw * M_PI / 180.0;
-        double roll_rad = roll * M_PI / 180.0;
-        double pitch_rad = pitch * M_PI / 180.0;
+        // double heading_rad = yaw * M_PI / 180.0;
+        // double roll_rad = roll * M_PI / 180.0;
+        // double pitch_rad = pitch * M_PI / 180.0;
         
         tf2::Quaternion q;
-        q.setRPY(roll_rad, pitch_rad, heading_rad);
+        q.setRPY(roll, pitch, heading);
         q.normalize();
 
 
