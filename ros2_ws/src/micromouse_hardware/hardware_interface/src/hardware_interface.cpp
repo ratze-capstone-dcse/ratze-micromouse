@@ -309,9 +309,9 @@ namespace ratze_hardware_interface
         // Store data and publish
         {
             std::lock_guard<std::mutex> lock(data_mutex_);
-            roll_ = values[0];
-            pitch_ = values[1];
-            yaw_ = values[2];
+            roll_ = -1* values[0];
+            pitch_ = -1* values[1];
+            yaw_ = -1 * values[2];
             gyro_x_ = values[3];
             gyro_y_ = values[4];
             gyro_z_ = values[5];
