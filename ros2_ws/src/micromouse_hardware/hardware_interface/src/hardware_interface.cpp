@@ -730,21 +730,37 @@ namespace ratze_hardware_interface
             odom_msg.twist.twist.linear.y = 0.0;
             odom_msg.twist.twist.angular.z = delta_theta / dt; // angular velocity
 
-            // set covariance
-            for (int i = 0; i < 36; ++i)
-            {
+            // A better way to set covariance
+            // Give a small non-zero value for the variables we are using
+            // Give a very large value for unused variables to tell the EKF to ignore them
+
+            // Set default large covariance for all
+            for (int i = 0; i < 36; ++i) {
                 odom_msg.pose.covariance[i] = 0.0;
                 odom_msg.twist.covariance[i] = 0.0;
             }
 
-            // position covariance
-            odom_msg.pose.covariance[0] = 0.01;  // x
-            odom_msg.pose.covariance[7] = 0.01;  // y
-            odom_msg.pose.covariance[35] = 0.02; // z
+            // ---- POSE COVARIANCE ----
+            // We are confident in X, Y, and Yaw
+            odom_msg.pose.covariance[0] = 0.01;   // X variance
+            odom_msg.pose.covariance[7] = 0.01;   // Y variance
+            odom_msg.pose.covariance[35] = 0.02;  // Yaw variance
 
-            // velocity covariance
-            odom_msg.twist.covariance[0] = 0.01;  // linear x
-            odom_msg.twist.covariance[35] = 0.01; // angular z
+            // We have no information about Z, roll, or pitch from this sensor
+            odom_msg.pose.covariance[14] = 1e9; // Z variance (large)
+            odom_msg.pose.covariance[21] = 1e9; // Roll variance (large)
+            odom_msg.pose.covariance[28] = 1e9; // Pitch variance (large)
+
+            // ---- TWIST COVARIANCE ----
+            // We are confident in linear X and angular Z velocity
+            odom_msg.twist.covariance[0] = 0.01;  // Linear X variance
+            odom_msg.twist.covariance[35] = 0.01; // Angular Z variance
+
+            // We have no information about other velocities
+            odom_msg.twist.covariance[7]  = 1e9; // Linear Y variance (large)
+            odom_msg.twist.covariance[14] = 1e9; // Linear Z variance (large)
+            odom_msg.twist.covariance[21] = 1e9; // Angular X variance (large)
+            odom_msg.twist.covariance[28] = 1e9; // Angular Y variance (large)
         }
         // publish odometry message
         odom_pub_->publish(odom_msg);
