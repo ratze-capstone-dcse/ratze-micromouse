@@ -30,6 +30,16 @@ def generate_launch_description():
             'slam_params_file': LaunchConfiguration('slam_params_file')  # Use LaunchConfiguration
         }.items()
     )
+
+    ekf_config_path = os.path.join(config_dir, 'ekf.yaml')
+
+    robot_localization_node = Node(
+       package='robot_localization',
+       executable='ekf_node',
+       name='ekf_filter_node',
+       output='screen',
+       parameters=[ekf_config_path]
+    )
     
     hardware_interface = Node(
         package='hardware_interface',
@@ -53,5 +63,6 @@ def generate_launch_description():
         slam_params_arg,  # Declare argument before using it
         hardware_interface,
         slam_launch,
+        robot_localization_node,
         rviz_node
     ])

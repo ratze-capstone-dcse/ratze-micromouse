@@ -5,6 +5,11 @@ using namespace std::chrono_literals;
 namespace ratze_hardware_interface
 {
 
+    // Constants for odometry
+    const double WHEEL_RADIUS = 0.035;            // meters
+    const double WHEEL_BASE = 0.15;               // meters
+    const double TICKS_PER_REVOLUTION = 100; // From datasheet
+
     RatzeHardwareInterface::RatzeHardwareInterface() : Node("ratze_hardware_interface"), connected_(false), running_(false),
                                                        last_odom_time_(this->now())
     {
@@ -400,9 +405,6 @@ namespace ratze_hardware_interface
 
         // Publish
         imu_pub_->publish(imu_msg);
-
-        // Update yaw for odometry
-        odom_yaw_ = yaw;
     }
 
     bool RatzeHardwareInterface::parseTofData(const std::string &line)
@@ -673,16 +675,18 @@ namespace ratze_hardware_interface
 
         // Calculate robot motion
         double distance = (left_distance + right_distance) / 2.0;
+        double delta_theta = (right_distance - left_distance) / WHEEL_BASE;
 
-        // Update position using heading from IMU
+        // Update position and orientation
+        odom_yaw_ += delta_theta;
         x_ += distance * cos(odom_yaw_);
         y_ += distance * sin(odom_yaw_);
 
         // Create and publish odometry message
-        publishOdometry(current_time, distance);
+        publishOdometry(current_time, distance, delta_theta);
     }
 
-    void RatzeHardwareInterface::publishOdometry(const rclcpp::Time &current_time, double distance)
+    void RatzeHardwareInterface::publishOdometry(const rclcpp::Time &current_time, double distance, double delta_theta)
     {
         // create quaternion from yaw
         tf2::Quaternion q;
@@ -723,7 +727,8 @@ namespace ratze_hardware_interface
         if (dt > 0)
         {
             odom_msg.twist.twist.linear.x = distance / dt; // linear velocity
-            odom_msg.twist.twist.linear.y = 0.0;           // angular velocity not calculated, using imu for heading
+            odom_msg.twist.twist.linear.y = 0.0;
+            odom_msg.twist.twist.angular.z = delta_theta / dt; // angular velocity
 
             // set covariance
             for (int i = 0; i < 36; ++i)

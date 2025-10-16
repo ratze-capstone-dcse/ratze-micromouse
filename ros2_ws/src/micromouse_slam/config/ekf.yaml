@@ -1,0 +1,61 @@
+# ekf.yaml
+# Configuration for robot_localization EKF node
+ekf_filter_node:
+    ros__parameters:
+        # General parameters
+        frequency: 30.0                 # The frequency in Hz at which the filter will run
+        sensor_timeout: 0.1             # How long to wait for a sensor to be considered timed out
+        two_d_mode: true                # Set to true for 2D operation (x, y, yaw)
+        publish_tf: true                # Whether to publish the transform from odom_frame to base_link_frame
+
+        # --- Frame parameters ---
+        map_frame: map                  # The global, fixed frame
+        odom_frame: odom                # The frame for odometry (will be published by the EKF)
+        base_link_frame: base_link      # The robot's base frame
+        world_frame: odom               # The world frame, usually 'odom' or 'map'
+
+        # --- Wheel Odometry Input ---
+        odom0: /odom                    # The topic name for your wheel odometry messages (nav_msgs/Odometry)
+        odom0_config: [ true,  true,  false,   # [X, Y, Z]
+                        false, false, false,   # [roll, pitch, yaw]
+                        true,  true,  false,   # [dX, dY, dZ] - linear velocities
+                        false, false, true,    # [droll, dpitch, dyaw] - angular velocities
+                        false, false, false]   # [ddX, ddY, ddZ] - linear accelerations
+
+        odom0_queue_size: 10
+        odom0_nodelay: true
+        odom0_differential: false       # Set to true if your odometry reports velocity change, not absolute velocity
+        odom0_relative: false
+
+        # --- IMU Input ---
+        imu0: /imu/data                 # The topic name for your IMU messages (sensor_msgs/Imu)
+        imu0_config: [  false, false, false,    # [X, Y, Z]
+                        false, false, true,     # [roll, pitch, yaw]
+                        false, false, false,    # [dX, dY, dZ]
+                        false, false, true,     # [droll, dpitch, dyaw]
+                        true,  false, false]    # [ddX, ddY, ddZ] - only use X acceleration if needed
+
+        imu0_queue_size: 10
+        imu0_nodelay: true
+        imu0_differential: false        # IMU reports absolute orientation and velocity
+        imu0_relative: false
+        imu0_remove_gravitational_acceleration: true # Recommended to set to true
+
+        # --- Process Noise Covariance ---
+        # Adjust these values based on your robot's characteristics.
+        # They represent the uncertainty in the robot's motion model.
+        process_noise_covariance: [ 0.05, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0.05, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0.06, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0.06, 0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0.025, 0,     0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0.025, 0,    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.02, 0,    0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.01, 0,    0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.01, 0,
+                                    0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.015]
