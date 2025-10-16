@@ -306,12 +306,6 @@ namespace ratze_hardware_interface
             }
         }
 
-        // if (values.size() < 4 || calib.size() < 4)
-        // {
-        //     RCLCPP_ERROR(this->get_logger(), "Incomplete IMU data: %s", line.c_str());
-        //     return false;
-        // }
-
         // Store data and publish
         {
             std::lock_guard<std::mutex> lock(data_mutex_);
@@ -360,7 +354,7 @@ namespace ratze_hardware_interface
         // Create IMU message
         auto imu_msg = sensor_msgs::msg::Imu();
         imu_msg.header.stamp = this->now();
-        imu_msg.header.frame_id = "imu_link";
+        imu_msg.header.frame_id = "base_link";
 
         // Convert roll, pitch, yaw to quaternion
         double heading_rad = yaw * M_PI / 180.0;
@@ -369,6 +363,8 @@ namespace ratze_hardware_interface
         
         tf2::Quaternion q;
         q.setRPY(roll_rad, pitch_rad, heading_rad);
+        q.normalize();
+
 
         imu_msg.orientation.x = q.x();
         imu_msg.orientation.y = q.y();
