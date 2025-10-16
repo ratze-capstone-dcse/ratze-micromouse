@@ -365,7 +365,7 @@ namespace ratze_hardware_interface
         q.setRPY(roll, pitch, yaw);
         q.normalize();
 
-        RCLCPP_ERROR(this->get_logger(), "YAWWWWW: %s", yaw.c_str());
+        RCLCPP_ERROR(this->get_logger(), "YAWWWWW: %f", yaw);
 
 
         imu_msg.orientation.x = q.x();
