@@ -362,7 +362,7 @@ namespace ratze_hardware_interface
         // double pitch_rad = pitch * M_PI / 180.0;
         
         tf2::Quaternion q;
-        q.setRPY(roll, pitch, heading);
+        q.setRPY(roll, pitch, yaw);
         q.normalize();
 
 
@@ -400,7 +400,7 @@ namespace ratze_hardware_interface
         imu_pub_->publish(imu_msg);
 
         // Update yaw for odometry
-        odom_yaw_ = heading_rad;
+        odom_yaw_ = yaw;
     }
 
     bool RatzeHardwareInterface::parseTofData(const std::string &line)
