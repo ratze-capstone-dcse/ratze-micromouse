@@ -118,7 +118,7 @@ private:
   void publishImuData();
   void publishTofData();
   void publishEncoderData();
-  void publishOdometry(const rclcpp::Time& current_time, double distance);
+  void publishOdometry(const rclcpp::Time& current_time, double distance, double delta_theta);
   void publishLaserScan(const std::vector<uint16_t>& distances);
   void publishLaserTransform();
 
