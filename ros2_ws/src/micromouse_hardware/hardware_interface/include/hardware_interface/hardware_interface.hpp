@@ -63,6 +63,12 @@ private:
   float roll_ = 0.0;
   float pitch_ = 0.0;
   float yaw_ = 0.0;
+  float gyro_x_ = 0.0;
+  float gyro_y_ = 0.0;
+  float gyro_z_ = 0.0;
+  float accel_x_ = 0.0;
+  float accel_y_ = 0.0;
+  float accel_z_ = 0.0;
   int sys_calib_ = 0;
   int gyro_calib_ = 0;
   int accel_calib_ = 0;

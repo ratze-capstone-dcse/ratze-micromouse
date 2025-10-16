@@ -282,14 +282,13 @@ namespace ratze_hardware_interface
 
     bool RatzeHardwareInterface::parseImuData(const std::string &line)
     {
-        // Format: IMU,heading,roll,pitch,yaw,sys,gyro,accel,mag
+        // Format: IMU,roll,pitch,yaw,gyro_x,gyro_y,gyro_z,accel_x,accell_y,accell_z
         std::istringstream iss(line.substr(4)); // Skip "IMU,"
         std::string token;
         std::vector<float> values;
-        std::vector<int> calib;
 
         // Parse floating point values
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 9; i++)
         {
             if (!std::getline(iss, token, ','))
             {
@@ -307,27 +306,6 @@ namespace ratze_hardware_interface
             }
         }
 
-        // Parse calibration integers
-        for (int i = 0; i < 4; i++)
-        {
-            if (!std::getline(iss, token, ','))
-            {
-                if (i == 3)
-                    break; // Last value might not have comma
-                RCLCPP_ERROR(this->get_logger(), "Failed to parse IMU calibration: %s", line.c_str());
-                return false;
-            }
-            try
-            {
-                calib.push_back(std::stoi(token));
-            }
-            catch (...)
-            {
-                RCLCPP_ERROR(this->get_logger(), "Failed to parse IMU calibration value: %s", token.c_str());
-                return false;
-            }
-        }
-
         if (values.size() < 4 || calib.size() < 4)
         {
             RCLCPP_ERROR(this->get_logger(), "Incomplete IMU data: %s", line.c_str());
@@ -337,14 +315,15 @@ namespace ratze_hardware_interface
         // Store data and publish
         {
             std::lock_guard<std::mutex> lock(data_mutex_);
-            heading_ = values[0];
-            roll_ = values[1];
-            pitch_ = values[2];
-            yaw_ = values[3];
-            sys_calib_ = calib[0];
-            gyro_calib_ = calib[1];
-            accel_calib_ = calib[2];
-            mag_calib_ = calib[3];
+            roll_ = values[0];
+            pitch_ = values[1];
+            yaw_ = values[2];
+            gyro_x_ = values[3];
+            gyro_y_ = values[4];
+            gyro_z_ = values[5];
+            accel_x_ = values[6];
+            accel_y_ = values[7];
+            accel_z_ = values[8];
         }
 
         // Publish IMU data
@@ -356,30 +335,26 @@ namespace ratze_hardware_interface
     void RatzeHardwareInterface::publishImuData()
     {
         // Make a local copy to avoid holding the mutex during publishing
-        float heading, roll, pitch, yaw;
+        float heading, roll, pitch, yaw, gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z;
         int sys_calib, gyro_calib, accel_calib, mag_calib;
 
-        (void)roll; // Mark as intentionally unused
-        (void)pitch;
-        (void)yaw;
-        (void)gyro_calib;
-        (void)accel_calib;
 
         {
             std::lock_guard<std::mutex> lock(data_mutex_);
-            heading = (heading_) * -1.0; // Invert heading to match ROS coordinate system
             roll = roll_;
             pitch = pitch_;
             yaw = yaw_;
-            sys_calib = sys_calib_;
-            gyro_calib = gyro_calib_;
-            accel_calib = accel_calib_;
-            mag_calib = mag_calib_;
+            gyro_x = gyro_x_;
+            gyro_y = gyro_y_;
+            gyro_z = gyro_z_;
+            accel_x = accel_x_;
+            accel_y = accel_y_;
+            accel_z = accel_z_;
         }
 
         // Publish heading as a Float32
         auto heading_msg = std_msgs::msg::Float32();
-        heading_msg.data = heading;
+        heading_msg.data = yaw; // Use yaw as heading
         heading_pub_->publish(heading_msg);
 
         // Create IMU message
@@ -387,15 +362,28 @@ namespace ratze_hardware_interface
         imu_msg.header.stamp = this->now();
         imu_msg.header.frame_id = "imu_link";
 
-        // Convert heading to quaternion (assuming level orientation)
-        double heading_rad = heading * M_PI / 180.0;
+        // Convert roll, pitch, yaw to quaternion
+        double heading_rad = yaw * M_PI / 180.0;
+        double roll_rad = roll * M_PI / 180.0;
+        double pitch_rad = pitch * M_PI / 180.0;
+        
         tf2::Quaternion q;
-        q.setRPY(0, 0, heading_rad);
+        q.setRPY(roll_rad, pitch_rad, heading_rad);
 
         imu_msg.orientation.x = q.x();
         imu_msg.orientation.y = q.y();
         imu_msg.orientation.z = q.z();
         imu_msg.orientation.w = q.w();
+        
+        // Add angular velocity data
+        imu_msg.angular_velocity.x = gyro_x;
+        imu_msg.angular_velocity.y = gyro_y;
+        imu_msg.angular_velocity.z = gyro_z;
+        
+        // Add linear acceleration data
+        imu_msg.linear_acceleration.x = accel_x;
+        imu_msg.linear_acceleration.y = accel_y;
+        imu_msg.linear_acceleration.z = accel_z;
 
         // We don't have angular velocity or linear acceleration data
         // in the heading-only mode, so these are left as zeros
