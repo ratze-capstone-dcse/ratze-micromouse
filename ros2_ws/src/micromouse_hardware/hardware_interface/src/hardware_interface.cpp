@@ -806,19 +806,7 @@ namespace ratze_hardware_interface
         int linear_val = static_cast<int>(linear);
         int angular_val = static_cast<int>(angular);
         
-        // Simple differential drive control
-        if (fabs(angular) > 0.1)
-        {
-            if (angular > 0)
-            {
-                turnLeft(linear_val, angular_val);
-            }
-            else
-            {
-                turnRight(linear_val, angular_val);
-            }
-        }
-        else if (linear > 0)
+        if (linear > 0)
         {
             moveForward(linear_val, angular_val);
         }
