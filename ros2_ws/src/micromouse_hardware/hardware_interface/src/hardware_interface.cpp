@@ -160,20 +160,22 @@ namespace ratze_hardware_interface
         }
     }
 
-    bool RatzeHardwareInterface::sendCommand(char cmd, int value)
+    bool RatzeHardwareInterface::sendCommand(char cmd, int value, int value2)
     {
         if (!connected_ || !serial_port_->IsOpen())
         {
             RCLCPP_ERROR(this->get_logger(), "Not connected");
             return false;
         }
+
         std::string command;
         command += cmd;
-        if (value > 0)
-        {
-            command += std::to_string(value);
-        }
+        command += ":";
+        command += std::to_string(value);
+        command += ":";
+        command += std::to_string(value2);
         command += '\n';
+
         try
         {
             serial_port_->Write(command);
