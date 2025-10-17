@@ -97,16 +97,16 @@ private:
   // Serial connection methods
   bool connect();
   void disconnect();
-  bool sendCommand(char cmd, int value = 0, int value2 = 0);
+  bool sendCommand(char cmd, float value = 0.0, float value2 = 0.0);
   bool waitForAck(char cmd, int timeout_ms = 1000);
   std::string readLine(int timeout_ms = 100);  // Updated to use LibSerial timeout
   void readThread();
   
   // Command methods
-  bool moveForward(int linear_speed, int angular_speed = 0);
-  bool moveBackward(int linear_speed, int angular_speed = 0);
-  bool turnLeft(int linear_speed, int angular_speed = 0);
-  bool turnRight(int linear_speed, int angular_speed = 0);
+  bool moveForward(float linear_speed, float angular_speed = 0.0);
+  bool moveBackward(float linear_speed, float angular_speed = 0.0);
+  bool turnLeft(float linear_speed, float angular_speed = 0.0);
+  bool turnRight(float linear_speed, float angular_speed = 0.0);
   bool stop();
   bool setSpeed(int speed);
   bool resetEncoders();

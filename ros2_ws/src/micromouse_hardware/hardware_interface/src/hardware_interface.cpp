@@ -160,7 +160,7 @@ namespace ratze_hardware_interface
         }
     }
 
-    bool RatzeHardwareInterface::sendCommand(char cmd, int value, int value2)
+    bool RatzeHardwareInterface::sendCommand(char cmd, float value, float value2)
     {
         if (!connected_ || !serial_port_->IsOpen())
         {
@@ -793,45 +793,41 @@ namespace ratze_hardware_interface
     void RatzeHardwareInterface::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
     {
         // convert twist to motor commands
-        double linear = msg->linear.x;
-        double angular = msg->angular.z;
+        float linear = msg->linear.x;
+        float angular = msg->angular.z;
 
         if (fabs(linear) < 0.01 && fabs(angular) < 0.01)
         {
             stop();
             return;
         }
-
-        // Use raw cmd_vel values as integers
-        int linear_val = static_cast<int>(linear);
-        int angular_val = static_cast<int>(angular);
         
         if (linear > 0)
         {
-            moveForward(linear_val, angular_val);
+            moveForward(linear, angular);
         }
         else if (linear < 0)
         {
-            moveBackward(linear_val, angular_val);
+            moveBackward(linear, angular);
         }
     }
 
-    bool RatzeHardwareInterface::moveForward(int linear_speed, int angular_speed)
+    bool RatzeHardwareInterface::moveForward(float linear_speed, float angular_speed)
     {
         return sendCommand('F', linear_speed, angular_speed) && waitForAck('F');
     }
 
-    bool RatzeHardwareInterface::moveBackward(int linear_speed, int angular_speed)
+    bool RatzeHardwareInterface::moveBackward(float linear_speed, float angular_speed)
     {
         return sendCommand('B', linear_speed, angular_speed) && waitForAck('B');
     }
 
-    bool RatzeHardwareInterface::turnLeft(int linear_speed, int angular_speed)
+    bool RatzeHardwareInterface::turnLeft(float linear_speed, float angular_speed)
     {
         return sendCommand('L', linear_speed, angular_speed) && waitForAck('L');
     }
 
-    bool RatzeHardwareInterface::turnRight(int linear_speed, int angular_speed)
+    bool RatzeHardwareInterface::turnRight(float linear_speed, float angular_speed)
     {
         return sendCommand('R', linear_speed, angular_speed) && waitForAck('R');
     }
