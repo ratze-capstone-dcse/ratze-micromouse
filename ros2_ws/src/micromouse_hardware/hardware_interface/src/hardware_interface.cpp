@@ -802,52 +802,50 @@ namespace ratze_hardware_interface
             return;
         }
 
-        const int MAX_SPEED = 255;
-        int speed = static_cast<int>(fabs(linear) * MAX_SPEED);
-        if (speed > MAX_SPEED)
-        {
-            speed = MAX_SPEED;
-        }
+        // Use raw cmd_vel values as integers
+        int linear_val = static_cast<int>(linear);
+        int angular_val = static_cast<int>(angular);
+        
         // Simple differential drive control
         if (fabs(angular) > 0.1)
         {
             if (angular > 0)
             {
-                turnLeft(speed);
+                turnLeft(linear_val, angular_val);
             }
             else
             {
-                turnRight(speed);
+                turnRight(linear_val, angular_val);
             }
         }
         else if (linear > 0)
         {
-            moveForward(speed);
+            moveForward(linear_val, angular_val);
         }
         else if (linear < 0)
         {
-            moveBackward(speed);
+            moveBackward(linear_val, angular_val);
         }
     }
 
-    bool RatzeHardwareInterface::moveForward(int speed)
+    bool RatzeHardwareInterface::moveForward(int linear_speed, int angular_speed)
     {
-        return sendCommand('F', speed) && waitForAck('F');
+        return sendCommand('F', linear_speed, angular_speed) && waitForAck('F');
     }
 
-    bool RatzeHardwareInterface::moveBackward(int speed)
+    bool RatzeHardwareInterface::moveBackward(int linear_speed, int angular_speed)
     {
-        return sendCommand('B', speed) && waitForAck('B');
+        return sendCommand('B', linear_speed, angular_speed) && waitForAck('B');
     }
 
-    bool RatzeHardwareInterface::turnLeft(int speed)
+    bool RatzeHardwareInterface::turnLeft(int linear_speed, int angular_speed)
     {
-        return sendCommand('L', speed) && waitForAck('L');
+        return sendCommand('L', linear_speed, angular_speed) && waitForAck('L');
     }
 
-    bool RatzeHardwareInterface::turnRight(int speed)
+    bool RatzeHardwareInterface::turnRight(int linear_speed, int angular_speed)
     {
-        return sendCommand('R', speed) && waitForAck('R');
+        return sendCommand('R', linear_speed, angular_speed) && waitForAck('R');
     }
 
     bool RatzeHardwareInterface::stop()
