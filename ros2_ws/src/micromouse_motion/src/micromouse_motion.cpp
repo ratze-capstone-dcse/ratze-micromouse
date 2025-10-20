@@ -132,26 +132,26 @@ namespace ratze_motion {
         double angle_degrees = steering_angle * 180.0 / M_PI;
         
         // Determine discrete action based on angle
-        if (std::abs(angle_degrees) < 5.0) {
+        if (std::abs(angle_degrees) < 12.5) {
             // Almost straight ahead, go forward
             return 'F';
-        } else if (angle_degrees >= 5.0 && angle_degrees < 22.5) {
-            // Small left turn (5 degrees)
+        } else if (angle_degrees >= 12.5 && angle_degrees < 35.0) {
+            // 25 degree left turn
             return '<';
-        } else if (angle_degrees <= -5.0 && angle_degrees > -22.5) {
-            // Small right turn (5 degrees)
+        } else if (angle_degrees <= -12.5 && angle_degrees > -35.0) {
+            // 25 degree right turn
             return '>';
-        } else if (angle_degrees >= 22.5 && angle_degrees < 67.5) {
-            // Medium left turn (45 degrees)
+        } else if (angle_degrees >= 35.0 && angle_degrees < 67.5) {
+            // 45 degree left turn
             return 'l';
-        } else if (angle_degrees <= -22.5 && angle_degrees > -67.5) {
-            // Medium right turn (45 degrees)
+        } else if (angle_degrees <= -35.0 && angle_degrees > -67.5) {
+            // 45 degree right turn
             return 'r';
         } else if (angle_degrees >= 67.5) {
-            // Large left turn (90 degrees)
+            // 90 degree left turn
             return 'L';
         } else {  // angle_degrees <= -67.5
-            // Large right turn (90 degrees)
+            // 90 degree right turn
             return 'R';
         }
     }
@@ -160,10 +160,19 @@ namespace ratze_motion {
         std_msgs::msg::Char msg;
         msg.data = command;
         command_pub_->publish(msg);
+        
+        // Check if we're starting a turn
+        if (command != 'F' && command != 'S' && last_command_ != command) {
+            // First stop the robot before turning
+            msg.data = 'S';
+            command_pub_->publish(msg);
+            RCLCPP_DEBUG(this->get_logger(), "Stopping before turn: %c", command);
+        }
+        
         last_command_ = command;
         
         // If turning, set flag to stop forward motion
-        is_turning_ = (command != 'F');
+        is_turning_ = (command != 'F' && command != 'S');
     }
 
     void RatzeMotion::controlLoop() {
@@ -177,7 +186,7 @@ namespace ratze_motion {
         int target_idx = computeTargetWaypoint();
         if (target_idx < 0) {
             // We've reached the end of the path
-            publishCommand('F');  // Stop by defaulting to forward (assumption is that the motor controller stops when no new commands are received)
+            publishCommand('S');  // Stop the robot when path is complete
             return;
         }
 
@@ -190,7 +199,7 @@ namespace ratze_motion {
         char action = selectDiscreteAction(steering_angle);
         
         // If currently turning and the previous command wasn't 'F', keep turning
-        if (is_turning_ && last_command_ != 'F') {
+        if (is_turning_) {
             // Continue with the current turn until we're aligned
             if (std::abs(steering_angle) < 0.05) {  // ~3 degrees threshold
                 is_turning_ = false;
@@ -204,7 +213,7 @@ namespace ratze_motion {
         }
         
         RCLCPP_DEBUG(this->get_logger(), "Target: (%.2f, %.2f), Steering: %.2f°, Action: %c", 
-                   target.x, target.y, steering_angle * 180.0 / M_PI, action);
+                    target.x, target.y, steering_angle * 180.0 / M_PI, action);
     }
 }
 

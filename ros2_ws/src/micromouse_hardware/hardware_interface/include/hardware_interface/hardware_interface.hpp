@@ -46,6 +46,7 @@ private:
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
   rclcpp::Subscription<std_msgs::msg::Char>::SharedPtr user_command_;
+  rclcpp::Subscription<std_msgs::msg::Char>::SharedPtr ratze_command_sub_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
@@ -131,6 +132,7 @@ private:
   // ROS callback methods
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
   void userCommandCallback(const std_msgs::msg::Char::SharedPtr msg);
+  void ratzeCommandCallback(const std_msgs::msg::Char::SharedPtr msg);
   void timerCallback();
 };
 

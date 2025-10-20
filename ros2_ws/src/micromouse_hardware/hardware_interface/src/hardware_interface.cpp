@@ -51,6 +51,11 @@ namespace ratze_hardware_interface
         user_command_ = this->create_subscription<std_msgs::msg::Char>(
             "user_command", 10,
             std::bind(&RatzeHardwareInterface::userCommandCallback, this, std::placeholders::_1));
+        
+        // Add subscriber for ratze_command
+        ratze_command_sub_ = this->create_subscription<std_msgs::msg::Char>(
+            "/ratze_command", 10,
+            std::bind(&RatzeHardwareInterface::ratzeCommandCallback, this, std::placeholders::_1));
 
         // Create tf broadcaster
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -157,6 +162,62 @@ namespace ratze_hardware_interface
         }
         catch (const std::exception &ex) {
             RCLCPP_ERROR(this->get_logger(), "Failed to send user command: %s", ex.what());
+        }
+    }
+
+    void RatzeHardwareInterface::ratzeCommandCallback(const std_msgs::msg::Char::SharedPtr msg)
+    {
+        char command = msg->data;
+        
+        try {
+            switch (command) {
+                case 'F':  // Forward
+                    serial_port_->Write("N\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Forward");
+                    break;
+                    
+                case 'S':  // Stop
+                    serial_port_->Write("S\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Stop");
+                    break;
+                    
+                case '<':  // 25 degree left turn
+                    serial_port_->Write("T:25\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Turn 25° left");
+                    break;
+                    
+                case '>':  // 25 degree right turn
+                    serial_port_->Write("T:-25\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Turn 25° right");
+                    break;
+                    
+                case 'l':  // 45 degree left turn
+                    serial_port_->Write("T:45\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Turn 45° left");
+                    break;
+                    
+                case 'r':  // 45 degree right turn
+                    serial_port_->Write("T:-45\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Turn 45° right");
+                    break;
+                    
+                case 'L':  // 90 degree left turn
+                    serial_port_->Write("T:90\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Turn 90° left");
+                    break;
+                    
+                case 'R':  // 90 degree right turn
+                    serial_port_->Write("T:-90\n");
+                    RCLCPP_INFO(this->get_logger(), "Command: Turn 90° right");
+                    break;
+                    
+                default:
+                    RCLCPP_WARN(this->get_logger(), "Unknown command: %c", command);
+                    break;
+            }
+        }
+        catch (const std::exception &ex) {
+            RCLCPP_ERROR(this->get_logger(), "Failed to send ratze command: %s", ex.what());
         }
     }
 
