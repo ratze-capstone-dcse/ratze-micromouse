@@ -1,6 +1,7 @@
 #include <micromouse_motion/micromouse_motion.hpp>
 #include <cmath>
 #include <iostream>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 namespace ratze_motion {
     RatzeMotion::RatzeMotion() : Node("ratze_motion") {
@@ -50,8 +51,12 @@ namespace ratze_motion {
 
     bool RatzeMotion::loadWaypointsFromConfig() {
         try {
-            // Path to config file
-            std::string config_path = "src/micromouse_motion/config/waypoints.yaml";
+            // Get package share directory
+            std::string package_share_directory = ament_index_cpp::get_package_share_directory("micromouse_motion");
+            std::string config_path = package_share_directory + "/config/waypoints.yaml";
+            
+            RCLCPP_INFO(this->get_logger(), "Loading waypoints from: %s", config_path.c_str());
+            
             YAML::Node config = YAML::LoadFile(config_path);
 
             if (config["waypoints"]) {
@@ -64,7 +69,17 @@ namespace ratze_motion {
                         waypoints_.push_back(point);
                     }
                 }
-                RCLCPP_INFO(this->get_logger(), "Loaded %zu waypoints", waypoints_.size());
+                RCLCPP_INFO(this->get_logger(), "Loaded %zu waypoints from 'waypoints'", waypoints_.size());
+                
+                // Print out each waypoint
+                for (size_t i = 0; i < waypoints_.size(); ++i) {
+                    RCLCPP_INFO(this->get_logger(), "  Waypoint %zu: [%.3f, %.3f]", 
+                               i, waypoints_[i].x, waypoints_[i].y);
+                }
+                
+                // Visualize waypoints in grid format
+                visualizeWaypoints();
+                
                 return !waypoints_.empty();
             }
             return false;
@@ -72,6 +87,54 @@ namespace ratze_motion {
             RCLCPP_ERROR(this->get_logger(), "Failed to load waypoints: %s", e.what());
             return false;
         }
+    }
+
+    void RatzeMotion::visualizeWaypoints() {
+        // Assuming 5x5 grid with 0.6m cell size
+        const int grid_size = 5;
+        const double cell_size = 0.6;
+        
+        // Create 5x5 grid visualization
+        std::vector<std::vector<char>> grid(grid_size, std::vector<char>(grid_size, '.'));
+        
+        // Mark waypoints with stars
+        for (const auto& wp : waypoints_) {
+            // Convert waypoint coordinates to grid indices
+            int col = static_cast<int>(wp.x / cell_size);
+            int row = static_cast<int>(wp.y / cell_size);
+            
+            // Check bounds
+            if (row >= 0 && row < grid_size && col >= 0 && col < grid_size) {
+                grid[row][col] = '*';
+            }
+        }
+        
+        // Mark start and goal
+        if (!waypoints_.empty()) {
+            int start_col = static_cast<int>(waypoints_.front().x / cell_size);
+            int start_row = static_cast<int>(waypoints_.front().y / cell_size);
+            if (start_row >= 0 && start_row < grid_size && start_col >= 0 && start_col < grid_size) {
+                grid[start_row][start_col] = 'S';
+            }
+            
+            int goal_col = static_cast<int>(waypoints_.back().x / cell_size);
+            int goal_row = static_cast<int>(waypoints_.back().y / cell_size);
+            if (goal_row >= 0 && goal_row < grid_size && goal_col >= 0 && goal_col < grid_size) {
+                grid[goal_row][goal_col] = 'G';
+            }
+        }
+        
+        // Print grid visualization
+        RCLCPP_INFO(this->get_logger(), "\n=== Waypoint Visualization (S=start, G=goal, *=path, .=free) ===");
+        for (int i = 0; i < grid_size; ++i) {
+            std::string row_str = "  ";
+            for (int j = 0; j < grid_size; ++j) {
+                row_str += grid[i][j];
+                row_str += " ";
+            }
+            RCLCPP_INFO(this->get_logger(), "%s", row_str.c_str());
+        }
+        RCLCPP_INFO(this->get_logger(), "==========================================================");
     }
 
     Point2D RatzeMotion::getCurrentPose() {

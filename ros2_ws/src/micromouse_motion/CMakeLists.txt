@@ -15,6 +15,8 @@ find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(PkgConfig REQUIRED)
+find_package(yaml-cpp REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 # Find yaml-cpp package
 pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
@@ -44,6 +46,7 @@ ament_target_dependencies(${PROJECT_NAME}
   nav_msgs
   tf2
   tf2_ros
+  ament_index_cpp
 )
 
 # Link against yaml-cpp
@@ -79,6 +82,12 @@ install(DIRECTORY
 # install launch files
 install(DIRECTORY
   launch config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install config directory
+install(DIRECTORY
+  config
   DESTINATION share/${PROJECT_NAME}
 )
 

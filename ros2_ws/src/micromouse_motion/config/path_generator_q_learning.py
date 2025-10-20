@@ -196,7 +196,7 @@ def main():
         print(f"  {i}: [{wp[0]:.2f}, {wp[1]:.2f}]")
     
     # Save to YAML file with custom waypoint name
-    solver.save_waypoints(waypoints, filename='waypoints.yaml', waypoint_name='waypoints_qlearning')
+    solver.save_waypoints(waypoints, filename='waypoints.yaml', waypoint_name='waypoints')
     
     # Visualize maze and path
     print("\nMaze visualization (S=start, G=goal, *=path, #=wall, .=free):")

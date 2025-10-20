@@ -1,4 +1,4 @@
-waypoints_qlearning:
+waypoints:
   - [0.300, 0.300]
   - [0.300, 0.900]
   - [0.300, 1.500]

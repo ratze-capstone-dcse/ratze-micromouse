@@ -45,6 +45,7 @@ public:
 private:
   // Helper methods
   bool loadWaypointsFromConfig();
+  void visualizeWaypoints();
   Point2D getCurrentPose();
   int computeTargetWaypoint();
   double computeSteeringAngle(const Point2D& target_point);
